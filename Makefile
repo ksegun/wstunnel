@@ -113,6 +113,7 @@ version:
 # there, like your laptop.
 depend:
 	go get $(DEPEND)
+	go install $(DEPEND)
 
 clean:
 	@echo "package main; const VV = \"$(NAME) unversioned - $(DATE)\"" >version.go

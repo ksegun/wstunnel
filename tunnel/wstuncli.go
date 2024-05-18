@@ -37,7 +37,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -89,7 +88,7 @@ var httpClient http.Client // client used for all requests, gets special transpo
 
 //===== Main =====
 
-//NewWSTunnelClient Creates a new WSTunnelClient from command line
+// NewWSTunnelClient Creates a new WSTunnelClient from command line
 func NewWSTunnelClient(args []string) *WSTunnelClient {
 	wstunCli := WSTunnelClient{}
 
@@ -226,7 +225,7 @@ func NewWSTunnelClient(args []string) *WSTunnelClient {
 	return &wstunCli
 }
 
-//Start creates the wstunnel connection.
+// Start creates the wstunnel connection.
 func (t *WSTunnelClient) Start() error {
 	t.Log.Info(VV)
 
@@ -341,7 +340,7 @@ func (t *WSTunnelClient) Start() error {
 	return nil
 }
 
-//Stop closes the wstunnel channel
+// Stop closes the wstunnel channel
 func (t *WSTunnelClient) Stop() {
 	t.exitChan <- struct{}{}
 	if t.conn != nil && t.conn.ws != nil {
@@ -377,7 +376,7 @@ func (wsc *WSConnection) handleRequests() {
 		// SetReadLimit on the websocket. We have to do this because we want to handle
 		// the request in a goroutine (see "go finish..Request" calls below) and the
 		// websocket doesn't allow us to have multiple goroutines reading...
-		buf, err := ioutil.ReadAll(r)
+		buf, err := io.ReadAll(r)
 		if err != nil {
 			wsc.Log.Warn("WS   cannot read request message", "id", id, "err", err.Error())
 			break
@@ -491,7 +490,7 @@ func (t *WSTunnelClient) wsDialerLocalPort(network string, addr string, ports []
 	return nil, err
 }
 
-//===== Proxy support =====
+// ===== Proxy support =====
 // Bits of this taken from golangs net/http/transport.go. Gorilla websocket lib
 // allows you to pass in a custom net.Dial function, which it will call instead
 // of net.Dial. net.Dial normally just opens up a tcp socket for you. We go one
@@ -537,7 +536,7 @@ func (t *WSTunnelClient) wsProxyDialer(network string, addr string) (conn net.Co
 		return nil, err
 	}
 	if resp.StatusCode != 200 {
-		//body, _ := ioutil.ReadAll(io.LimitReader(resp.Body, 500))
+		//body, _ := io.ReadAll(io.LimitReader(resp.Body, 500))
 		//resp.Body.Close()
 		//return nil, errors.New("proxy refused connection" + string(body))
 		f := strings.SplitN(resp.Status, " ", 2)
@@ -591,7 +590,7 @@ func newResponseWriter(req *http.Request) *responseWriter {
 	buf := bytes.Buffer{}
 	resp := http.Response{
 		Header:        make(http.Header),
-		Body:          ioutil.NopCloser(&buf),
+		Body:          io.NopCloser(&buf),
 		StatusCode:    -1,
 		ContentLength: -1,
 		Proto:         req.Proto,
@@ -805,7 +804,7 @@ func concoctResponse(req *http.Request, message string, code int) *http.Response
 		Request:    req,
 	}
 	body := bytes.NewReader([]byte(message))
-	r.Body = ioutil.NopCloser(body)
+	r.Body = io.NopCloser(body)
 	r.ContentLength = int64(body.Len())
 	r.Header.Add("content-type", "text/plain")
 	r.Header.Add("date", time.Now().Format(time.RFC1123))

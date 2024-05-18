@@ -1,15 +1,27 @@
 module github.com/rightscale/wstunnel
 
-go 1.16
+go 1.22
 
 require (
-	github.com/go-stack/stack v1.8.0 // indirect
-	github.com/gorilla/websocket v1.4.2
-	github.com/mattn/go-colorable v0.1.8 // indirect
-	github.com/mattn/go-isatty v0.0.13 // indirect
-	github.com/onsi/gomega v1.17.0
+	github.com/gorilla/websocket v1.5.1
 	github.com/onsi/ginkgo v1.16.5
-	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
-	golang.org/x/sys v0.0.0-20210806184541-e5e7981a1069 // indirect
-	gopkg.in/inconshreveable/log15.v2 v2.0.0-20200109203555-b30bc20e4fd1
+	github.com/onsi/gomega v1.17.0
+	gopkg.in/inconshreveable/log15.v2 v2.16.0
+)
+
+require (
+	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/go-stack/stack v1.8.1 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/nxadm/tail v1.4.8 // indirect
+	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/term v0.20.0 // indirect
+	golang.org/x/text v0.15.0 // indirect
+	google.golang.org/protobuf v1.26.0 // indirect
+	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

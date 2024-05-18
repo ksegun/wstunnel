@@ -8,7 +8,6 @@ import (
 	"net"
 	"regexp"
 	"time"
-	"io/ioutil"
 )
 
 var orgNameRe = regexp.MustCompile("Org[^a-zA-Z]?Name[^a-zA-Z]*(.*)")
@@ -26,7 +25,7 @@ func queryWhois(server, ipAddr string) (referralServer, orgName string) {
         conn.SetReadDeadline(time.Now().Add(3*time.Second))
         fmt.Fprintf(conn, "%s\r\n", ipAddr)
         // read response all at once
-        buf, err := ioutil.ReadAll(conn)
+        buf, err := io.ReadAll(conn)
         if err != nil {
                 log.Printf("whois: timeout reading response from %s", server)
                 return

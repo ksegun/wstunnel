@@ -32,7 +32,7 @@ var _ fmt.Formatter
 // https://groups.google.com/forum/#!topic/golang-nuts/oBIh_R7-pJQ
 //const cliTout = 300 // http read/write/idle timeout
 
-//ErrRetry Error when sending request
+// ErrRetry Error when sending request
 var ErrRetry = errors.New("Error sending request, please retry")
 
 const tunnelInactiveKillTimeout = 60 * time.Minute   // close dead tunnels
@@ -79,7 +79,7 @@ type remoteServer struct {
 	log             log15.Logger
 }
 
-//WSTunnelServer a wstunnel server construct
+// WSTunnelServer a wstunnel server construct
 type WSTunnelServer struct {
 	Port                int                     // port to listen on
 	Host                string                  // host to listen on
@@ -118,7 +118,7 @@ func ipAddrLookup(log log15.Logger, ipAddr string) (dns, who string) {
 
 //===== Main =====
 
-//NewWSTunnelServer function to create wstunnel from cli
+// NewWSTunnelServer function to create wstunnel from cli
 func NewWSTunnelServer(args []string) *WSTunnelServer {
 	wstunSrv := WSTunnelServer{}
 
@@ -147,7 +147,7 @@ func NewWSTunnelServer(args []string) *WSTunnelServer {
 	return &wstunSrv
 }
 
-//Start wstunnel server start
+// Start wstunnel server start
 func (t *WSTunnelServer) Start(listener net.Listener) {
 	t.Log.Info(VV)
 	if t.serverRegistry != nil {
@@ -208,7 +208,7 @@ func (t *WSTunnelServer) Start(listener net.Listener) {
 	}()
 }
 
-//Stop wstunnelserver stop
+// Stop wstunnelserver stop
 func (t *WSTunnelServer) Stop() {
 	t.exitChan <- struct{}{}
 }
