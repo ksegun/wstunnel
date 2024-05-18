@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"html"
 	"io"
-	"io/ioutil"
 	"net/http"
 
 	// imported per documentation - https://golang.org/pkg/net/http/pprof/
@@ -26,7 +25,7 @@ func httpError(log log15.Logger, w http.ResponseWriter, token, err string, code 
 	http.Error(w, html.EscapeString(err), code)
 }
 
-//websocket error constants
+// websocket error constants
 const (
 	wsReadClose  = iota
 	wsReadError  = iota
@@ -197,7 +196,7 @@ func wsReader(rs *remoteServer, ws *websocket.Conn, wsTimeout time.Duration, ch 
 		}
 		// read request itself, the size is limited by the SetReadLimit on the websocket
 		var buf []byte
-		buf, err = ioutil.ReadAll(r)
+		buf, err = io.ReadAll(r)
 		if err != nil {
 			break
 		}

@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net"
 	"net/http"
@@ -143,7 +142,7 @@ var _ = Describe("Testing requests", func() {
 
 			resp, err := http.Get(wstunURL + "/_token/" + wstunToken + "/hello")
 			Ω(err).ShouldNot(HaveOccurred())
-			respBody, err := ioutil.ReadAll(resp.Body)
+			respBody, err := io.ReadAll(resp.Body)
 			Ω(err).ShouldNot(HaveOccurred())
 			Ω(string(respBody)).Should(Equal("WORLD"))
 			Ω(resp.Header.Get("Content-Type")).Should(Equal("text/world"))
@@ -174,7 +173,7 @@ var _ = Describe("Testing requests", func() {
 			resp, err := http.Post(wstunURL+"/_token/"+wstunToken+"/large-request",
 				"text/binary", bytes.NewReader(reqBody))
 			Ω(err).ShouldNot(HaveOccurred())
-			respBody, err := ioutil.ReadAll(resp.Body)
+			respBody, err := io.ReadAll(resp.Body)
 			Ω(err).ShouldNot(HaveOccurred())
 			Ω(string(respBody)).Should(Equal("WORLD"))
 			Ω(resp.Header.Get("Content-Type")).Should(Equal("text/world"))
@@ -202,7 +201,7 @@ var _ = Describe("Testing requests", func() {
 
 			resp, err := http.Get(wstunURL + "/_token/" + wstunToken + "/large-response")
 			Ω(err).ShouldNot(HaveOccurred())
-			respRecv, err := ioutil.ReadAll(resp.Body)
+			respRecv, err := io.ReadAll(resp.Body)
 			Ω(err).ShouldNot(HaveOccurred())
 			Ω(respRecv).Should(Equal(respBody))
 			Ω(resp.Header.Get("Content-Type")).Should(Equal("text/binary"))
@@ -222,7 +221,7 @@ var _ = Describe("Testing requests", func() {
 
 			resp, err := http.Get(wstunURL + "/_token/" + wstunToken + "/hello")
 			Ω(err).ShouldNot(HaveOccurred())
-			respBody, err := ioutil.ReadAll(resp.Body)
+			respBody, err := io.ReadAll(resp.Body)
 			Ω(err).ShouldNot(HaveOccurred())
 			Ω(string(respBody)).Should(Equal("WORLD"))
 			Ω(resp.Header.Get("Content-Type")).Should(Equal("text/world"))
@@ -249,7 +248,7 @@ var _ = Describe("Testing requests", func() {
 				txt := fmt.Sprintf("/hello/%d", i)
 				resp, err := http.Get(wstunURL + "/_token/" + wstunToken + txt)
 				Ω(err).ShouldNot(HaveOccurred())
-				respBody, err := ioutil.ReadAll(resp.Body)
+				respBody, err := io.ReadAll(resp.Body)
 				Ω(err).ShouldNot(HaveOccurred())
 				Ω(string(respBody)).Should(Equal(txt))
 				Ω(resp.Header.Get("Content-Type")).Should(Equal("text/world"))
@@ -291,7 +290,7 @@ var _ = Describe("Testing requests", func() {
 			for i := 0; i < N; i++ {
 				txt := fmt.Sprintf("/hello/%d", i)
 				Ω(err[i]).ShouldNot(HaveOccurred())
-				respBody, err := ioutil.ReadAll(resp[i].Body)
+				respBody, err := io.ReadAll(resp[i].Body)
 				Ω(err).ShouldNot(HaveOccurred())
 				Ω(string(respBody)).Should(Equal(txt))
 				Ω(resp[i].Header.Get("Content-Type")).Should(Equal("text/world"))
