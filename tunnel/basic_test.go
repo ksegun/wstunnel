@@ -275,8 +275,8 @@ var _ = Describe("Testing requests", func() {
 					}
 				})
 
-			resp := make([]*http.Response, N, N)
-			err := make([]error, N, N)
+			resp := make([]*http.Response, N)
+			err := make([]error, N)
 			wg := sync.WaitGroup{}
 			wg.Add(N)
 			for i := 0; i < N; i++ {
@@ -353,7 +353,7 @@ var _ = Describe("Testing requests", func() {
 
 			log15.Info("Client started")
 
-			startClient = func(wstunToken string, wstunHost string, proxy *url.URL, server *ghttp.Server) *WSTunnelClient {
+			startClient = func(wstunToken string, wstunHost string, _ *url.URL, server *ghttp.Server) *WSTunnelClient {
 				wstuncli = NewWSTunnelClient([]string{
 					"-token", wstunToken,
 					"-tunnel", "ws://" + wstunHost,

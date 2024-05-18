@@ -35,12 +35,13 @@ var netNameRe = regexp.MustCompile("network:Organization[^a-zA-Z]*([ -~]*)")
 // Whois determines ip information from robowhois
 func Whois(ipAddr, apiToken string) string {
 	result := ""
-	if net.ParseIP(ipAddr) == nil {
-		fmt.Printf("IP Address: %s - Invalid\n", ipAddr)
+	ip := net.ParseIP(ipAddr)
+	if ip == nil {
+		// log.Printf("IP Address: %s - Invalid\n", ipAddr)
 		result = ""
 	} else {
-		fmt.Printf("IP Address: %s - Valid\n", ipAddr)
-		validIpAddr := net.ParseIP(ipAddr).String()
+		validIpAddr := ip.String()
+		// log.Printf("IP Address: %s - Valid\n", validIpAddr)
 		url := fmt.Sprint("http://api.robowhois.com/v1/whois/", validIpAddr, "/parts")
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
@@ -64,7 +65,7 @@ func Whois(ipAddr, apiToken string) string {
 			result = ""
 		}
 		n := len(data.Response.Parts)
-		//log.Printf("robowhois: %s -> %s", ipAddr, data.Response.Parts[n-1].Body)
+		// log.Printf("robowhois: %s -> %s", ipAddr, data.Response.Parts[n-1].Body)
 
 		match := orgNameRe.FindAllStringSubmatch(data.Response.Parts[n-1].Body, -1)
 		if match == nil {

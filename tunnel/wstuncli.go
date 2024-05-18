@@ -146,13 +146,13 @@ func NewWSTunnelClient(args []string) *WSTunnelClient {
 		}
 
 		if tunnelUrl.Scheme != "ws" && tunnelUrl.Scheme != "wss" {
-			log15.Crit(fmt.Sprintf("Remote tunnel (-tunnel option) must begin with ws:// or wss://"))
+			log15.Crit("Remote tunnel (-tunnel option) must begin with ws:// or wss://")
 			os.Exit(1)
 		}
 
 		wstunCli.Tunnel = tunnelUrl
 	} else {
-		log15.Crit(fmt.Sprintf("Must specify tunnel server ws://hostname:port using -tunnel option"))
+		log15.Crit("Must specify tunnel server ws://hostname:port using -tunnel option")
 		os.Exit(1)
 	}
 
@@ -234,14 +234,14 @@ func (t *WSTunnelClient) Start() error {
 		t.Server = ""
 	} else if t.Server != "" {
 		if !strings.HasPrefix(t.Server, "http://") && !strings.HasPrefix(t.Server, "https://") {
-			return fmt.Errorf("Local server (-server option) must begin with http:// or https://")
+			return fmt.Errorf("local server (-server option) must begin with http:// or https://")
 		}
 		t.Server = strings.TrimSuffix(t.Server, "/")
 	}
 
 	// validate token and timeout
 	if t.Token == "" {
-		return fmt.Errorf("Must specify rendez-vous token using -token option")
+		return fmt.Errorf("must specify rendez-vous token using -token option")
 	}
 
 	tlsClientConfig := tls.Config{}
@@ -259,7 +259,7 @@ func (t *WSTunnelClient) Start() error {
 	} else if t.Server != "" || t.Regexp != nil {
 		t.Log.Info("Dispatching to external server(s)", "server", t.Server, "regexp", t.Regexp)
 	} else {
-		return fmt.Errorf("Must specify internal server or server or regexp")
+		return fmt.Errorf("must specify internal server or server or regexp")
 	}
 
 	if t.Proxy != nil {
@@ -479,7 +479,7 @@ func (t *WSTunnelClient) wsDialerLocalPort(network string, addr string, ports []
 		}
 
 		conn, err = net.DialTCP(network, client, server)
-		if (conn != nil) && (err == nil) {
+		if err == nil {
 			return conn, nil
 		}
 		err = fmt.Errorf("WS: error connecting with local port %d: %s", port, err.Error())
