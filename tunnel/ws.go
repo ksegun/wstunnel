@@ -25,13 +25,6 @@ func httpError(log log15.Logger, w http.ResponseWriter, token, err string, code 
 	http.Error(w, html.EscapeString(err), code)
 }
 
-// websocket error constants
-const (
-	wsReadClose  = iota
-	wsReadError  = iota
-	wsWriteError = iota
-)
-
 func wsp(ws *websocket.Conn) string { return fmt.Sprintf("%p", ws) }
 
 // Handler for websockets tunnel establishment requests
@@ -54,16 +47,21 @@ func wsHandler(t *WSTunnelServer, w http.ResponseWriter, r *http.Request) {
 	}
 	logTok := cutToken(token(tok))
 	// Upgrade to web sockets
-	ws, err := websocket.Upgrade(w, r, nil, 100*1024, 100*1024)
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  100 * 1024,
+		WriteBufferSize: 100 * 1024,
+		CheckOrigin: func(_ *http.Request) bool {
+			return tok != "" && len(tok) >= minTokenLen
+		},
+	}
+	ws, err := upgrader.Upgrade(w, r, nil)
 	if _, ok := err.(websocket.HandshakeError); ok {
 		t.Log.Info("WS new tunnel connection rejected", "token", logTok, "addr", addr,
 			"err", "Not a websocket handshake")
-		httpError(t.Log, w, logTok, "Not a websocket handshake", 400)
 		return
 	} else if err != nil {
 		t.Log.Info("WS new tunnel connection rejected", "token", logTok, "addr", addr,
 			"err", err.Error())
-		httpError(t.Log, w, logTok, err.Error(), 400)
 		return
 	}
 	// Get/Create RemoteServer
@@ -118,7 +116,7 @@ func wsWriter(rs *remoteServer, ws *websocket.Conn, ch chan int) {
 		select {
 		case req = <-rs.requestQueue:
 			// awesome...
-		case _ = <-ch:
+		case <-ch:
 			// time to close shop
 			rs.log.Info("WS closing on signal", "ws", wsp(ws))
 			ws.Close()
@@ -128,10 +126,10 @@ func wsWriter(rs *remoteServer, ws *websocket.Conn, ch chan int) {
 		// See whether the request has already expired
 		if req.deadline.Before(time.Now()) {
 			req.replyChan <- responseBuffer{
-				err: errors.New("Timeout before forwarding the request"),
+				err: errors.New("timeout before forwarding the request"),
 			}
 			req.log.Info("WS   SND timeout before sending", "ago",
-				time.Now().Sub(req.deadline).Seconds())
+				time.Since(req.deadline).Seconds())
 			continue
 		}
 		// write the request into the tunnel

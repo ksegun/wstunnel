@@ -33,10 +33,9 @@ var _ fmt.Formatter
 //const cliTout = 300 // http read/write/idle timeout
 
 // ErrRetry Error when sending request
-var ErrRetry = errors.New("Error sending request, please retry")
+var ErrRetry = errors.New("error sending request, please retry")
 
-const tunnelInactiveKillTimeout = 60 * time.Minute   // close dead tunnels
-const tunnelInactiveRefuseTimeout = 10 * time.Minute // refuse requests for dead tunnels
+const tunnelInactiveKillTimeout = 60 * time.Minute // close dead tunnels
 
 //===== Data Structures =====
 
@@ -358,7 +357,7 @@ func getResponse(t *WSTunnelServer, req *remoteRequest, w http.ResponseWriter, r
 	if err != nil {
 		req.log.Info("HTTP RCV", "addr", req.remoteAddr, "status", "504",
 			"err", err.Error())
-		http.Error(w, err.Error(), 504)
+		http.Error(w, err.Error(), http.StatusGatewayTimeout)
 		return
 	}
 	try := ""
@@ -380,7 +379,7 @@ func getResponse(t *WSTunnelServer, req *remoteRequest, w http.ResponseWriter, r
 		if resp.err != ErrRetry {
 			req.log.Info("HTTP RET",
 				"status", "504", "err", resp.err.Error())
-			http.Error(w, resp.err.Error(), 504)
+			http.Error(w, resp.err.Error(), http.StatusGatewayTimeout)
 		} else {
 			// else we're gonna retry
 			req.log.Info("WS   retrying", "verb", r.Method, "url", r.URL)
@@ -389,7 +388,7 @@ func getResponse(t *WSTunnelServer, req *remoteRequest, w http.ResponseWriter, r
 	case <-time.After(t.HTTPTimeout):
 		// it timed out...
 		req.log.Info("HTTP RET", "status", "504", "err", "Tunnel timeout")
-		http.Error(w, "Tunnel timeout", 504)
+		http.Error(w, "Tunnel timeout", http.StatusGatewayTimeout)
 	}
 	return
 }
@@ -437,7 +436,7 @@ l:
 	for {
 		select {
 		case req := <-rs.requestQueue:
-			err := fmt.Errorf("Tunnel deleted due to inactivity, request cancelled")
+			err := fmt.Errorf("tunnel deleted due to inactivity, request cancelled")
 			select {
 			case req.replyChan <- responseBuffer{err: err}: // non-blocking send
 			default:
@@ -464,7 +463,7 @@ func (rs *remoteServer) AddRequest(req *remoteRequest) error {
 		// enqueued!
 		return nil
 	default:
-		return errors.New("Too many requests in-flight, tunnel broken?")
+		return errors.New("too many requests in-flight, tunnel broken?")
 	}
 }
 
